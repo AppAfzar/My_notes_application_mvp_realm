@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">My Notes</string>
+    <string name="create_new">Create new</string>
+    <string name="title">title</string>
+
+    <string name="add_text">Add Text</string>
+    <string name="add_drawing">Add Drawing</string>
+
+    <string name="hint_add_note_title">Note Title</string>
+    <string name="hint_add_note_text">What is on you mind?</string>
+
+    <string name="message_no_text_selected">Select a text</string>
+
+    <string name="import_db">Import Data</string>
+    <string name="export_db">Export Data</string>
+
+    <string name="add">Add</string>
+    <string name="start_delete">Start Delete</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="notes">Notes</string>
+    <string name="note_folders">Note Folders</string>
+    <string name="note">Note</string>
+    <string name="bold">Bold</string>
+    <string name="italic">Italic</string>
+    <string name="save">Save</string>
+    <string name="undo">Undo</string>
+    <string name="title_is_required">Title can not be empty.</string>
+
+</resources>
