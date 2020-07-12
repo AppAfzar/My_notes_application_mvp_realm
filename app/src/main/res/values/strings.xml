@@ -26,5 +26,6 @@
     <string name="save">Save</string>
     <string name="undo">Undo</string>
     <string name="title_is_required">Title can not be empty.</string>
+    <string name="Clear">Clear</string>
 
 </resources>

@@ -3,5 +3,7 @@
 
     <dimen name="normal_dimen">8dp</dimen>
     <dimen name="standard_dimen">16dp</dimen>
+    <dimen name="small_dimen">4dp</dimen>
+    <dimen name="medium_dimen">10dp</dimen>
 
 </resources>
