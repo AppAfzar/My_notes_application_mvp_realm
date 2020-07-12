@@ -6,6 +6,7 @@ import android.text.Editable;
 import com.appafzar.notes.App;
 import com.appafzar.notes.model.NoteModel;
 import com.appafzar.notes.model.interfaces.NoteInterface;
+import com.appafzar.notes.view.custom.CustomDrawingView;
 
 import java.util.Collection;
 
@@ -35,5 +36,9 @@ public class NotePresenter {
 
     public void deleteCollection(Collection<Integer> ids) {
         model.deleteCollection(ids);
+    }
+
+    public void createDrawing(String title, CustomDrawingView painting) {
+        model.createDrawing(title, painting);
     }
 }

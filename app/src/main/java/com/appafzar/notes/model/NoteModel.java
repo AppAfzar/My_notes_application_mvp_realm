@@ -6,6 +6,7 @@ import android.text.Html;
 
 import com.appafzar.notes.helper.Const;
 import com.appafzar.notes.model.entity.Note;
+import com.appafzar.notes.view.custom.CustomDrawingView;
 
 import java.util.Calendar;
 
@@ -49,5 +50,9 @@ public class NoteModel extends BaseModel<Note> {
      */
     public boolean isInEditMode() {
         return activity.getIntent().getBooleanExtra(Const.IS_EDITING, false);
+    }
+
+    public void createDrawing(String title, CustomDrawingView painting) {
+        // TODO: 2020-07-13  
     }
 }

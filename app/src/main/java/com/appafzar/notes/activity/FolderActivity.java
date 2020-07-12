@@ -103,8 +103,7 @@ public class FolderActivity extends ToolbarActivity implements NoteInterface {
             case R.id.action_add_drawing:
                 AddNewObjectDialog.start(this, title -> {
                     final int newId = (int) Calendar.getInstance().getTimeInMillis();
-                    App.realm.executeTransaction(realm ->
-                    {
+                    App.realm.executeTransaction(realm -> {
                         Note newNote = realm.createObject(Note.class, newId);
                         newNote.setTitle(title);
                         newNote.setPainting(true);

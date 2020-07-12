@@ -9,7 +9,6 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -48,8 +47,6 @@ public class CustomDrawingView extends View {
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
         mPaint.setAntiAlias(true);
-        Log.i("tag", "initialized");
-
     }
 
     /**
@@ -113,6 +110,7 @@ public class CustomDrawingView extends View {
      */
     public void clear() {
         mCanvas.drawColor(ContextCompat.getColor(getContext(), R.color.main_bg));
+        invalidate();
     }
 
     /**

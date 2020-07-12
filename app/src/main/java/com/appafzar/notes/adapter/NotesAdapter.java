@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.appafzar.notes.R;
+import com.appafzar.notes.activity.DrawingActivity;
 import com.appafzar.notes.activity.NoteActivity;
 import com.appafzar.notes.databinding.RowItemBinding;
 import com.appafzar.notes.model.entity.Note;
@@ -58,8 +59,12 @@ public class NotesAdapter extends RealmRecyclerViewAdapter<Note, NotesAdapter.It
             holder.binding.checkBox.setVisibility(View.GONE);
         }
         holder.itemView.setOnClickListener(v -> {
-            NoteActivity.start((Activity) context, note.getId());
+            if (note.isPainting())
+                DrawingActivity.start((Activity) context, note.getId());
+            else
+                NoteActivity.start((Activity) context, note.getId());
         });
+        holder.binding.icon.setImageResource(note.isPainting() ? R.drawable.ic_drawing_24 : R.drawable.ic_note_24);
     }
 
     @Override
@@ -93,7 +98,6 @@ public class NotesAdapter extends RealmRecyclerViewAdapter<Note, NotesAdapter.It
         ItemViewHolder(RowItemBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
-            binding.icon.setImageResource(R.drawable.ic_note_24);
         }
     }
 }

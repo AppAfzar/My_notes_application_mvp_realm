@@ -30,12 +30,6 @@ public class NoteActivity extends ToolbarActivity implements NoteInterface {
     private TextStyleHandler styleHandler;
     private NotePresenter presenter;
     private Note note;
-    private Menu menu;
-
-    //to start a new note creation
-    public static void start(Activity activity) {
-        start(activity, 0);
-    }
 
     public static void start(Activity activity, int noteId) {
         Intent intent = new Intent(activity, NoteActivity.class);
@@ -78,14 +72,7 @@ public class NoteActivity extends ToolbarActivity implements NoteInterface {
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        if (note != null) menu.findItem(R.id.action_delete).setVisible(true);
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        this.menu = menu;
         getMenuInflater().inflate(R.menu.note_view, menu);
         return true;
     }
@@ -103,7 +90,6 @@ public class NoteActivity extends ToolbarActivity implements NoteInterface {
             presenter.delete(note.getId());
             finishActivity();
         } else return super.onOptionsItemSelected(item);
-
         return true;
     }
 
