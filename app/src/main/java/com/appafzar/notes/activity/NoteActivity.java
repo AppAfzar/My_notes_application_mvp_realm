@@ -118,12 +118,12 @@ public class NoteActivity extends ToolbarActivity implements NoteInterface {
 
             App.realm.executeTransaction(realm -> {
                 note.setTitle(String.valueOf(binding.edtTitle.getText()));
-                note.setText(String.valueOf(binding.edtText.getText()));
+                note.setText(Html.toHtml(binding.edtText.getText()));
             });
         } else //activity is in new Note mode
             presenter.createNote(
                     String.valueOf(binding.edtTitle.getText()),
-                    String.valueOf(binding.edtText.getText())
+                    binding.edtText.getText()
             );
 
         super.onBackPressed();

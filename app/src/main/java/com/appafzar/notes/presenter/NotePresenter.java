@@ -1,6 +1,7 @@
 package com.appafzar.notes.presenter;
 
 import android.app.Activity;
+import android.text.Editable;
 
 import com.appafzar.notes.App;
 import com.appafzar.notes.model.NoteModel;
@@ -23,7 +24,7 @@ public class NotePresenter {
     /**
      * Save user note using model saveNote method.
      */
-    public void createNote(String title, String text) {
+    public void createNote(String title, Editable text) {
         model.createNote(title, text);
     }
 

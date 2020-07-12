@@ -1,6 +1,8 @@
 package com.appafzar.notes.model;
 
 import android.app.Activity;
+import android.text.Editable;
+import android.text.Html;
 
 import com.appafzar.notes.helper.Const;
 import com.appafzar.notes.model.entity.Note;
@@ -30,12 +32,12 @@ public class NoteModel extends BaseModel<Note> {
      * @param title user note title
      * @param text  user note text
      */
-    public void createNote(String title, String text) {
+    public void createNote(String title, Editable text) {
         final int id = (int) Calendar.getInstance().getTimeInMillis();
         realm.executeTransactionAsync(realm -> {
             Note newNote = realm.createObject(Note.class, id);
             newNote.setTitle(title);
-            newNote.setText(text);
+            newNote.setText(Html.toHtml(text));
             newNote.setPainting(true);
         });
     }
