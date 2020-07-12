@@ -93,6 +93,7 @@ public class FolderActivity extends ToolbarActivity implements NoteInterface {
                     {
                         Note newNote = realm.createObject(Note.class, newId);
                         newNote.setTitle(title);
+                        newNote.setPainting(false);
                         folder.getNotes().add(newNote);
                     });
                     NoteActivity.start(FolderActivity.this, newId);
@@ -100,7 +101,17 @@ public class FolderActivity extends ToolbarActivity implements NoteInterface {
                 return true;
 
             case R.id.action_add_drawing:
-
+                AddNewObjectDialog.start(this, title -> {
+                    final int newId = (int) Calendar.getInstance().getTimeInMillis();
+                    App.realm.executeTransaction(realm ->
+                    {
+                        Note newNote = realm.createObject(Note.class, newId);
+                        newNote.setTitle(title);
+                        newNote.setPainting(true);
+                        folder.getNotes().add(newNote);
+                    });
+                    DrawingActivity.start(FolderActivity.this, newId);
+                });
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
