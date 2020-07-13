@@ -33,7 +33,7 @@ public class FolderPresenter {
      * Calls model to get imported path and pass it to {@link MainActivity}
      */
     public void importDatabase() {
-        model.getImportedPath();
+//        model.importDatabase();
     }
 
     /**

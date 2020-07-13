@@ -32,11 +32,20 @@ public class FolderModel extends BaseModel<Folder> {
         return id;
     }
 
-    public void getImportedPath() {
+    public void clearDatabase() {
+        realm.executeTransactionAsync(realm ->
+                realm.deleteAll()
+        );
 
     }
 
+    public void importDatabase(String asJSON) {
+        realm.executeTransactionAsync(realm ->
+                realm.createOrUpdateAllFromJson(Folder.class, asJSON)
+        );
+    }
+
     public String exportDatabase() {
-        return null;
+        return realm.where(Folder.class).findAll().asJSON();
     }
 }
