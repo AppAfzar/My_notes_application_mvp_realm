@@ -1,4 +1,4 @@
-package com.appafzar.notes.activity;
+package com.appafzar.notes.view.activities;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -8,13 +8,12 @@ import android.view.MenuItem;
 
 import com.appafzar.notes.App;
 import com.appafzar.notes.R;
-import com.appafzar.notes.activity.base.ToolbarActivity;
+import com.appafzar.notes.model.FolderModel;
+import com.appafzar.notes.view.activities.base.ToolbarActivity;
 import com.appafzar.notes.helper.Const;
-import com.appafzar.notes.model.entity.Folder;
-import com.appafzar.notes.model.entity.Note;
-import com.appafzar.notes.model.interfaces.NoteInterface;
-import com.appafzar.notes.presenter.NotePresenter;
-import com.appafzar.notes.view.NotesRecyclerView;
+import com.appafzar.notes.model.NoteModel;
+import com.appafzar.notes.viewmodel.NoteViewModel;
+import com.appafzar.notes.view.custom.NotesRecyclerView;
 import com.appafzar.notes.view.dialog.AddNewObjectDialog;
 
 import java.util.Calendar;
@@ -24,11 +23,11 @@ import java.util.Calendar;
  * https://github.com/AppAfzar
  * Website: appafzar.com
  */
-public class FolderActivity extends ToolbarActivity implements NoteInterface {
+public class FolderActivity extends ToolbarActivity {
     private NotesRecyclerView recyclerView;
-    private NotePresenter presenter;
-    private Folder folder;
+    private NoteViewModel noteVM;
     private Menu menu;
+    private FolderModel folder;
 
     public static void start(Activity activity, int folderId) {
         Intent intent = new Intent(activity, FolderActivity.class);
@@ -40,22 +39,26 @@ public class FolderActivity extends ToolbarActivity implements NoteInterface {
     @Override
     public void init(Bundle savedInstanceState) {
         super.init(savedInstanceState);
-        presenter = new NotePresenter(this, this);
+        noteVM = new NoteViewModel(this);
+        recyclerView = new NotesRecyclerView(this);
+        includeContentView(recyclerView);
 
     }
 
     @Override
     public void initExtra(Intent intent) {
-        folder = App.realm.where(Folder.class)
-                .equalTo(Const.FolderEntity.FIELD_ID, intent.getIntExtra(Const.FolderEntity.FIELD_ID, 0))
-                .findFirst();
-        if (folder == null) {
+        int fid = intent.getIntExtra(Const.FolderEntity.FIELD_ID, 0);
+        if (fid == 0) {
             finish();
             return;
         }
-        setTitle(folder.getName());
-        recyclerView = new NotesRecyclerView(this, folder.getNotes());
-        includeContentView(recyclerView);
+        new NoteViewModel(this).getFolder(fid).observe(this, folder -> {
+            this.folder = folder;
+            recyclerView.setData(folder);
+            setTitle(folder.getName());
+        });
+
+
     }
 
     @Override
@@ -78,7 +81,7 @@ public class FolderActivity extends ToolbarActivity implements NoteInterface {
                 menu.setGroupVisible(R.id.group_delete_mode, true);
                 return true;
             case R.id.action_end_delete_mode:
-                presenter.deleteCollection(recyclerView.getCountersToDelete());
+                noteVM.deleteNoteCollection(recyclerView.getCountersToDelete());
                 // Fall through
             case R.id.action_cancel_delete_mode:
                 recyclerView.enableDeletionMode(false);
@@ -91,7 +94,7 @@ public class FolderActivity extends ToolbarActivity implements NoteInterface {
                     final int newId = (int) Calendar.getInstance().getTimeInMillis();
                     App.realm.executeTransaction(realm ->
                     {
-                        Note newNote = realm.createObject(Note.class, newId);
+                        NoteModel newNote = realm.createObject(NoteModel.class, newId);
                         newNote.setTitle(title);
                         newNote.setPainting(false);
                         folder.getNotes().add(newNote);
@@ -104,7 +107,7 @@ public class FolderActivity extends ToolbarActivity implements NoteInterface {
                 AddNewObjectDialog.start(this, title -> {
                     final int newId = (int) Calendar.getInstance().getTimeInMillis();
                     App.realm.executeTransaction(realm -> {
-                        Note newNote = realm.createObject(Note.class, newId);
+                        NoteModel newNote = realm.createObject(NoteModel.class, newId);
                         newNote.setTitle(title);
                         newNote.setPainting(true);
                         folder.getNotes().add(newNote);

@@ -1,58 +1,61 @@
 package com.appafzar.notes.model;
 
-import android.app.Activity;
-import android.text.Editable;
-import android.text.Html;
-
-import com.appafzar.notes.helper.Const;
-import com.appafzar.notes.model.entity.Note;
-import com.appafzar.notes.view.custom.CustomDrawingView;
-
-import java.util.Calendar;
-
-import io.realm.Realm;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.Required;
 
 /**
  * Created by: Hashemi
  * https://github.com/AppAfzar
  * Website: appafzar.com
  */
-public class NoteModel extends BaseModel<Note> {
+public class NoteModel extends RealmObject {
 
-    private Activity activity;
+    @PrimaryKey
+    private int id;
+    private String title;
+    @Required
+    private String text;
+    private byte[] drawing;
+    private boolean painting;
 
-    public NoteModel(Activity activity, Realm realm) {
-        super(activity, realm, Note.class);
-        this.activity = activity;
+    public int getId() {
+        return id;
     }
 
-    /**
-     * This method saves/updates a note to database. We save text as html in order to save bold and italic property.
-     * If isEditing is true means user is editing an existing note otherwise user is making new note.
-     *
-     * @param title user note title
-     * @param text  user note text
-     */
-    public void createNote(String title, Editable text) {
-        final int id = (int) Calendar.getInstance().getTimeInMillis();
-        realm.executeTransactionAsync(realm -> {
-            Note newNote = realm.createObject(Note.class, id);
-            newNote.setTitle(title);
-            newNote.setText(Html.toHtml(text));
-            newNote.setPainting(true);
-        });
+    public void setId(int id) {
+        this.id = id;
     }
 
-    /**
-     * Checks if we are editing an existing drawing or making new one
-     *
-     * @return boolean The extra boolean sent from NoteActivity
-     */
-    public boolean isInEditMode() {
-        return activity.getIntent().getBooleanExtra(Const.IS_EDITING, false);
+    public String getTitle() {
+        return title;
     }
 
-    public void createDrawing(String title, CustomDrawingView painting) {
-        // TODO: 2020-07-13  
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public byte[] getDrawing() {
+        return drawing;
+    }
+
+    public void setDrawing(byte[] drawing) {
+        this.drawing = drawing;
+    }
+
+    public boolean isPainting() {
+        return painting;
+    }
+
+    public void setPainting(boolean painting) {
+        this.painting = painting;
     }
 }

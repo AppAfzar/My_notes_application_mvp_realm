@@ -1,4 +1,4 @@
-package com.appafzar.notes.activity;
+package com.appafzar.notes.view.activities;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,25 +11,24 @@ import android.view.MenuItem;
 
 import com.appafzar.notes.App;
 import com.appafzar.notes.R;
-import com.appafzar.notes.activity.base.ToolbarActivity;
+import com.appafzar.notes.view.activities.base.ToolbarActivity;
 import com.appafzar.notes.databinding.ActivityNoteBinding;
 import com.appafzar.notes.helper.Const;
 import com.appafzar.notes.helper.TextStyleHandler;
 import com.appafzar.notes.helper.Tools;
-import com.appafzar.notes.model.entity.Note;
-import com.appafzar.notes.model.interfaces.NoteInterface;
-import com.appafzar.notes.presenter.NotePresenter;
+import com.appafzar.notes.model.NoteModel;
+import com.appafzar.notes.viewmodel.NoteViewModel;
 
 /**
  * Created by: Hashemi
  * https://github.com/AppAfzar
  * Website: appafzar.com
  */
-public class NoteActivity extends ToolbarActivity implements NoteInterface {
+public class NoteActivity extends ToolbarActivity {
     private ActivityNoteBinding binding;
     private TextStyleHandler styleHandler;
-    private NotePresenter presenter;
-    private Note note;
+    private NoteViewModel viewModel;
+    private NoteModel note;
 
     public static void start(Activity activity, int noteId) {
         Intent intent = new Intent(activity, NoteActivity.class);
@@ -42,17 +41,20 @@ public class NoteActivity extends ToolbarActivity implements NoteInterface {
     public void init(Bundle savedInstanceState) {
         super.init(savedInstanceState);
         binding = ActivityNoteBinding.inflate(getLayoutInflater());
-        presenter = new NotePresenter(this, this);
+        viewModel = new NoteViewModel(this);
         styleHandler = new TextStyleHandler(this);
         includeContentView(binding.getRoot());
     }
 
     @Override
     public void initExtra(Intent intent) {
-        note = App.realm.where(Note.class)
-                .equalTo(Const.FolderEntity.FIELD_ID, intent.getIntExtra(Const.FolderEntity.FIELD_ID, 0))
-                .findFirst();
-        if (note != null) setData(note); //Activity is in edit mode
+        int nid = intent.getIntExtra(Const.FolderEntity.FIELD_ID, 0);
+        note = viewModel.getNote(nid);
+        if (note == null) {
+            finish();
+            return;
+        }
+        setData(note); //Activity is in edit mode
     }
 
     /**
@@ -61,7 +63,7 @@ public class NoteActivity extends ToolbarActivity implements NoteInterface {
      *
      * @param note The NoteStruct which contains user's saved data.
      */
-    private void setData(Note note) {
+    private void setData(NoteModel note) {
         binding.edtTitle.setText(note.getTitle());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             binding.edtText.setText(Html.fromHtml(note.getText(), Html.FROM_HTML_MODE_COMPACT));
@@ -87,7 +89,7 @@ public class NoteActivity extends ToolbarActivity implements NoteInterface {
         } else if (id == R.id.action_undo) {
             setData(note);
         } else if (id == R.id.action_delete) {
-            presenter.delete(note.getId());
+            viewModel.deleteNote(note.getId());
             finishActivity();
         } else return super.onOptionsItemSelected(item);
         return true;
@@ -95,23 +97,14 @@ public class NoteActivity extends ToolbarActivity implements NoteInterface {
 
     @Override
     public void onBackPressed() {
-        if (note != null) //Activity is in edit mode
-        {
-            if (Tools.isNullOrEmpty(binding.edtTitle.getText().toString().trim())) {
-                showMessage(getString(R.string.title_is_required));
-                return;
-            }
-
-            App.realm.executeTransaction(realm -> {
-                note.setTitle(String.valueOf(binding.edtTitle.getText()));
-                note.setText(Html.toHtml(binding.edtText.getText()));
-            });
-        } else //activity is in new Note mode
-            presenter.createNote(
-                    String.valueOf(binding.edtTitle.getText()),
-                    binding.edtText.getText()
-            );
-
+        if (Tools.isNullOrEmpty(binding.edtTitle.getText().toString().trim())) {
+            showMessage(getString(R.string.title_is_required));
+            return;
+        }
+        App.realm.executeTransaction(realm -> {
+            note.setTitle(String.valueOf(binding.edtTitle.getText()));
+            note.setText(Html.toHtml(binding.edtText.getText()));
+        });
         super.onBackPressed();
     }
 

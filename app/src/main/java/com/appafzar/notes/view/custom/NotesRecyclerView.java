@@ -1,4 +1,4 @@
-package com.appafzar.notes.view;
+package com.appafzar.notes.view.custom;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -8,14 +8,10 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.appafzar.notes.adapter.NotesAdapter;
-import com.appafzar.notes.helper.Const;
-import com.appafzar.notes.model.entity.Note;
+import com.appafzar.notes.model.FolderModel;
+import com.appafzar.notes.view.adapters.NotesAdapter;
 
 import java.util.Collection;
-
-import io.realm.RealmList;
-import io.realm.Sort;
 
 /**
  * Created by: Hashemi
@@ -26,13 +22,18 @@ import io.realm.Sort;
 public class NotesRecyclerView extends RecyclerView {
     private NotesAdapter adapter;
 
-    public NotesRecyclerView(@NonNull Context context, RealmList<Note> notes) {
+    public NotesRecyclerView(@NonNull Context context) {
         super(context);
         setLayoutManager(new LinearLayoutManager(getContext()));
         setHasFixedSize(true);
         addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
-        adapter = new NotesAdapter(getContext(), notes.sort(Const.NoteEntity.FIELD_ID, Sort.DESCENDING));
+        adapter = new NotesAdapter(context);
         setAdapter(adapter);
+    }
+
+    public void setData(FolderModel folder) {
+        if (folder != null)
+            adapter.setData(folder.getNotes());
     }
 
     public void enableDeletionMode(boolean isEnabled) {

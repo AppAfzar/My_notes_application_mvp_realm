@@ -1,4 +1,4 @@
-package com.appafzar.notes.activity.base;
+package com.appafzar.notes.view.activities.base;
 
 import android.content.Context;
 import android.content.Intent;

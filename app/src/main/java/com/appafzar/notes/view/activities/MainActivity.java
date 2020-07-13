@@ -1,14 +1,13 @@
-package com.appafzar.notes.activity;
+package com.appafzar.notes.view.activities;
 
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.appafzar.notes.R;
-import com.appafzar.notes.activity.base.ToolbarActivity;
-import com.appafzar.notes.model.interfaces.FolderInterface;
-import com.appafzar.notes.presenter.FolderPresenter;
-import com.appafzar.notes.view.FoldersRecyclerView;
+import com.appafzar.notes.viewmodel.FolderViewModel;
+import com.appafzar.notes.view.activities.base.ToolbarActivity;
+import com.appafzar.notes.view.custom.FoldersRecyclerView;
 import com.appafzar.notes.view.dialog.AddNewObjectDialog;
 
 /**
@@ -16,9 +15,9 @@ import com.appafzar.notes.view.dialog.AddNewObjectDialog;
  * https://github.com/AppAfzar
  * Website: appafzar.com
  */
-public class MainActivity extends ToolbarActivity implements FolderInterface {
+public class MainActivity extends ToolbarActivity {
     private FoldersRecyclerView recyclerView;
-    private FolderPresenter presenter;
+    private FolderViewModel viewModel;
     private Menu menu;
 
     @Override
@@ -27,10 +26,14 @@ public class MainActivity extends ToolbarActivity implements FolderInterface {
         assert actionBar != null;
         actionBar.setDisplayHomeAsUpEnabled(false);
         actionBar.setHomeButtonEnabled(false);
-        presenter = new FolderPresenter(this, this);
+        viewModel = new FolderViewModel(this);
         recyclerView = new FoldersRecyclerView(this);
         includeContentView(recyclerView);
         setTitle(R.string.note_folders);
+
+        new FolderViewModel(this).getFolders().observe(this, folderModels ->
+                recyclerView.setData(folderModels)
+        );
     }
 
 
@@ -49,7 +52,7 @@ public class MainActivity extends ToolbarActivity implements FolderInterface {
         switch (id) {
             case R.id.action_add:
                 AddNewObjectDialog.start(this, name ->
-                        FolderActivity.start(MainActivity.this, presenter.addFolder(name))
+                        FolderActivity.start(MainActivity.this, viewModel.addFolder(name))
                 );
                 return true;
 
@@ -59,7 +62,7 @@ public class MainActivity extends ToolbarActivity implements FolderInterface {
                 menu.setGroupVisible(R.id.group_delete_mode, true);
                 return true;
             case R.id.action_end_delete_mode:
-                presenter.deleteCollection(recyclerView.getCountersToDelete());
+                viewModel.deleteNoteCollection(recyclerView.getCountersToDelete());
                 // Fall through
             case R.id.action_cancel_delete_mode:
                 recyclerView.enableDeletionMode(false);

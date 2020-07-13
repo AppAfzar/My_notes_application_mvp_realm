@@ -1,51 +1,44 @@
 package com.appafzar.notes.model;
 
-import android.content.Context;
-
-import com.appafzar.notes.helper.Tools;
-import com.appafzar.notes.model.entity.Folder;
-
-import java.util.Calendar;
-
-import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.Required;
 
 /**
  * Created by: Hashemi
  * https://github.com/AppAfzar
  * Website: appafzar.com
  */
-public class FolderModel extends BaseModel<Folder> {
+public class FolderModel extends RealmObject {
 
-    public FolderModel(Context context, Realm realm) {
-        super(context, realm, Folder.class);
-    }
+    @PrimaryKey
+    private int id;
+    @Required
+    private String name;
+    private RealmList<NoteModel> notes;
 
-    public int createFolder(String name) {
-        if (Tools.isNullOrEmpty(name)) return 0;
-        final int id = (int) Calendar.getInstance().getTimeInMillis();
-        realm.executeTransactionAsync(realm -> {
-            Folder folder = realm.createObject(Folder.class, id);
-            folder.setName(name);
-            folder.setNotes(new RealmList<>());
-        });
+    public int getId() {
         return id;
     }
 
-    public void clearDatabase() {
-        realm.executeTransactionAsync(realm ->
-                realm.deleteAll()
-        );
-
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void importDatabase(String asJSON) {
-        realm.executeTransactionAsync(realm ->
-                realm.createOrUpdateAllFromJson(Folder.class, asJSON)
-        );
+    public String getName() {
+        return name;
     }
 
-    public String exportDatabase() {
-        return realm.where(Folder.class).findAll().asJSON();
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public RealmList<NoteModel> getNotes() {
+        return notes;
+    }
+
+    public void setNotes(RealmList<NoteModel> notes) {
+        this.notes = notes;
     }
 }

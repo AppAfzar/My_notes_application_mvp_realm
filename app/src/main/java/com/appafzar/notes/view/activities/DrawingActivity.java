@@ -1,4 +1,4 @@
-package com.appafzar.notes.activity;
+package com.appafzar.notes.view.activities;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -13,14 +13,13 @@ import android.widget.AdapterView;
 
 import com.appafzar.notes.App;
 import com.appafzar.notes.R;
-import com.appafzar.notes.activity.base.ToolbarActivity;
-import com.appafzar.notes.adapter.CustomSpinnerAdapter;
+import com.appafzar.notes.view.activities.base.ToolbarActivity;
+import com.appafzar.notes.view.adapters.CustomSpinnerAdapter;
 import com.appafzar.notes.databinding.ActivityDrawingBinding;
 import com.appafzar.notes.helper.Const;
 import com.appafzar.notes.helper.Tools;
-import com.appafzar.notes.model.entity.Note;
-import com.appafzar.notes.model.interfaces.NoteInterface;
-import com.appafzar.notes.presenter.NotePresenter;
+import com.appafzar.notes.model.NoteModel;
+import com.appafzar.notes.viewmodel.NoteViewModel;
 
 
 /**
@@ -28,11 +27,11 @@ import com.appafzar.notes.presenter.NotePresenter;
  * https://github.com/AppAfzar
  * Website: appafzar.com
  */
-public class DrawingActivity extends ToolbarActivity implements NoteInterface {
+public class DrawingActivity extends ToolbarActivity {
 
     private ActivityDrawingBinding binding;
-    private NotePresenter presenter;
-    private Note note;
+    private NoteViewModel viewModel;
+    private NoteModel note;
 
     //to start a new note creation
     public static void start(Activity activity, int noteId) {
@@ -87,7 +86,7 @@ public class DrawingActivity extends ToolbarActivity implements NoteInterface {
         binding = ActivityDrawingBinding.inflate(getLayoutInflater());
         includeContentView(binding.getRoot());
 
-        presenter = new NotePresenter(this, this);
+        viewModel = new NoteViewModel(this);
         // Action item click listeners setup
         binding.txtClear.setOnClickListener(v -> binding.painting.clear());
 
@@ -104,10 +103,13 @@ public class DrawingActivity extends ToolbarActivity implements NoteInterface {
 
     @Override
     public void initExtra(Intent intent) {
-        note = App.realm.where(Note.class)
-                .equalTo(Const.FolderEntity.FIELD_ID, intent.getIntExtra(Const.FolderEntity.FIELD_ID, 0))
-                .findFirst();
-        if (note != null) editMode(note); //Activity is in edit mode
+        int nid = intent.getIntExtra(Const.FolderEntity.FIELD_ID, 0);
+        note = viewModel.getNote(nid);
+        if (note == null) {
+            finish();
+            return;
+        }
+        editMode(note); //Activity is in edit mode
     }
 
     @Override
@@ -120,7 +122,7 @@ public class DrawingActivity extends ToolbarActivity implements NoteInterface {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_delete) {
-            presenter.delete(note.getId());
+            viewModel.deleteNote(note.getId());
             finishActivity();
         } else return super.onOptionsItemSelected(item);
         return true;
@@ -128,19 +130,16 @@ public class DrawingActivity extends ToolbarActivity implements NoteInterface {
 
     @Override
     public void onBackPressed() {
-        if (note != null) //Activity is in edit mode
-        {
-            if (Tools.isNullOrEmpty(binding.edtTitle.getText().toString().trim())) {
-                showMessage(getString(R.string.title_is_required));
-                return;
-            }
+        if (Tools.isNullOrEmpty(binding.edtTitle.getText().toString().trim())) {
+            showMessage(getString(R.string.title_is_required));
+            return;
+        }
 
-            App.realm.executeTransaction(realm -> {
-                note.setTitle(String.valueOf(binding.edtTitle.getText()));
-                note.setDrawing(binding.painting.getByteArray());
-            });
-        } else //activity is in new Note mode
-            presenter.createDrawing(binding.edtTitle.getText().toString(), binding.painting);
+        App.realm.executeTransaction(realm -> {
+            note.setTitle(String.valueOf(binding.edtTitle.getText()));
+            note.setDrawing(binding.painting.getByteArray());
+        });
+
         super.onBackPressed();
     }
 
@@ -150,7 +149,7 @@ public class DrawingActivity extends ToolbarActivity implements NoteInterface {
      *
      * @param note The NoteStruct which contains user's saved data.
      */
-    public void editMode(final Note note) {
+    public void editMode(final NoteModel note) {
         binding.getRoot().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {

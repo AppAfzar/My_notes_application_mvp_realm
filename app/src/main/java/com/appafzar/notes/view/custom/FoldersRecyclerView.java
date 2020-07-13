@@ -1,4 +1,4 @@
-package com.appafzar.notes.view;
+package com.appafzar.notes.view.custom;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -9,14 +9,11 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.appafzar.notes.App;
-import com.appafzar.notes.adapter.FoldersAdapter;
-import com.appafzar.notes.helper.Const;
-import com.appafzar.notes.model.entity.Folder;
+import com.appafzar.notes.view.adapters.FoldersAdapter;
+import com.appafzar.notes.model.FolderModel;
 
 import java.util.Collection;
-
-import io.realm.Sort;
+import java.util.List;
 
 /**
  * Created by: Hashemi
@@ -35,9 +32,12 @@ public class FoldersRecyclerView extends RecyclerView {
         setLayoutManager(new LinearLayoutManager(getContext()));
         setHasFixedSize(true);
         addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
-        adapter = new FoldersAdapter(getContext(),
-                App.realm.where(Folder.class).sort(Const.FolderEntity.FIELD_NAME, Sort.ASCENDING).findAll());
+        adapter = new FoldersAdapter(context);
         setAdapter(adapter);
+    }
+
+    public void setData(List<FolderModel> dataList) {
+        adapter.setData(dataList);
     }
 
     public void enableDeletionMode(boolean isEnabled) {

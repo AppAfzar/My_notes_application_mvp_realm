@@ -1,4 +1,4 @@
-package com.appafzar.notes.adapter;
+package com.appafzar.notes.view.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

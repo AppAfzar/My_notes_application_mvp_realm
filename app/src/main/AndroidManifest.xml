@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".activity.MainActivity">
+        <activity android:name=".view.activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -20,12 +20,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.FolderActivity"
+            android:name=".view.activities.FolderActivity"
             android:label="@string/notes" />
         <activity
-            android:name=".activity.NoteActivity"
+            android:name=".view.activities.NoteActivity"
             android:label="@string/note" />
-        <activity android:name=".activity.DrawingActivity" />
+        <activity android:name=".view.activities.DrawingActivity" />
     </application>
 
 </manifest>
