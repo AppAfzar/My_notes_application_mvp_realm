@@ -12,3 +12,6 @@
 ### a new branch "MVVM-PATTERN".
 
 If you are looking for a sample for MVVM structure, this repository can help you! 
+
+### Download this sample app from google play store:
+<a href="https://play.google.com/store/apps/details?id=com.appafzar.notes" target="_blank" rel="noopener noreferrer">https://play.google.com/store/apps/details?id=com.appafzar.notes</a>
